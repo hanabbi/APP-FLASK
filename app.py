@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from models import Producto
 from database import init_app
+#from views import *
 
 app = Flask(__name__)
 
@@ -13,37 +14,6 @@ app.config.from_object('config.Config')
 
 CORS(app)
 
-app = Flask(__name__)
-
-# Configuración CORS para un endpoint específico
-cors = CORS(app, resources={r"/agregar_producto": {"origins": "http://127.0.0.1:5500"}})
-CORS(app, resources={r"/productos/*": {"origins": "http://127.0.0.1:5500"}})
-
-
-UPLOAD_FOLDER = 'upload'
-
-# Endpoint para agregar un producto
-@app.route('/productos', methods=['POST'])
-def agregar_producto():
-    data = request.get_json()
-    producto = Producto(
-        nombre_prod=data['nombre_prod'],
-        descripcion=data['descripcion'],
-        precio=data['precio'],
-        talla=data.get('talla'),
-        color=data.get('color'),
-        tipo=data['tipo'],
-        stock=data['stock'],
-        imagen_url=data.get('imagen_url')
-    )
-    try:
-        producto.save()
-        return jsonify({'mensaje': 'Producto agregado correctamente', 'producto': producto.serialize()}), 201
-    except ValueError as e:
-        return jsonify({'error': str(e)}), 400
-    
-
-     
 
 # Ruta principal para mostrar todos los productos en formato JSON
 @app.route('/', methods=['GET'])
@@ -55,6 +25,14 @@ def mostrar_productos_json():
     return jsonify(productos_json)
 
 
+@app.route('/productos', methods=['POST'])
+def create_producto():
+        data = request.json
+        nuevo_producto = Producto(nombre_prod=data['nombre_prod'], descripcion=data['descripcion'], precio=data['precio'], talla=data['talla'], color=data['color'], tipo=data['tipo'], stock=data['stock'], imagen_url=data['imagen_url'])
+        nuevo_producto.save()
+        return jsonify({'mensaje': 'Producto agregado correctamente'}), 201
+   
+    
 #trae todos los productos
 @app.route('/productos/', methods=['GET'])
 def get_all_productos():
@@ -69,22 +47,23 @@ def get_producto(id_prod):
         return jsonify({'message': 'Producto no encontrado'}), 404
     return jsonify(producto.serialize())
 
-#actualiza producto
 @app.route('/productos/<int:id_prod>', methods=['PUT'])
 def update_producto(id_prod):
     producto = Producto.get_by_id(id_prod)
     if not producto:
         return jsonify({'message': 'Producto no encontrado'}), 404
+    
     data = request.json
-    producto.nombre_prod = data['nombre_prod']
-    producto.descripcion = data['descripcion']
-    producto.precio = data['precio']
-    producto.talla = data['talla']
-    producto.color = data['color']
-    producto.tipo = data['tipo']
-    producto.stock = data['stock']
-    producto.imagen_url = data['imagen_url']
+    producto.nombre_prod = data.get('nombre_prod', producto.nombre_prod)
+    producto.descripcion = data.get('descripcion', producto.descripcion)
+    producto.precio = data.get('precio', producto.precio)
+    producto.talla = data.get('talla', producto.talla)
+    producto.color = data.get('color', producto.color)
+    producto.tipo = data.get('tipo', producto.tipo)
+    producto.stock = data.get('stock', producto.stock)
+    producto.imagen_url = data.get('imagen_url', producto.imagen_url)
     producto.save()
+    
     return jsonify({'message': 'Producto actualizado exitosamente'})
 
 #elimina producto
@@ -95,6 +74,16 @@ def delete_producto(id_prod):
         return jsonify({'message': 'Producto no encontrado'}), 404
     producto.delete()
     return jsonify({'message': 'Producto eliminado exitosamente'})
+
+"""
+# Rutas para el CRUD de Producto
+app.route('/', methods=['GET'])(mostrar_productos_json)
+app.route('/productos/', methods=['POST'])(create_producto)
+app.route('/productos/', methods=['GET'])(get_all_productos)
+app.route('/productos/<int:movie_id>', methods=['GET'])(get_producto)
+app.route('/productos/<int:movie_id>', methods=['PUT'])(update_producto)
+app.route('/productos/<int:movie_id>', methods=['DELETE'])(delete_producto)
+"""
 
 if __name__ == '__main__':
     app.run(debug=True)
