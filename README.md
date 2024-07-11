@@ -2,13 +2,17 @@
 
 IMPORTANTE: la ruta /productos/ tiene un error de CORS, por lo tanto no funciona los https desde el frontend, excepto el que muestra
 a todos los productos. 
-En otro momento lo resolveré, no llegamos para la entrega por cuestiones de tiempo. 
+En otro momento lo resolveré. 
 Cómo debo entregar el proyecto, si bien el resto funciona, asi lo chequeé desde insomnia, 
 aún así, paso un script todocuero.sql (Script BBDD todocuero/todocuero.sql) para tener datos iniciales en la bbdd. 
 
 En el frontend, debe ir a Gestión de Productos, allí mostrará el listado de productos y lo resuelve dinámicamente. 
 No agregué otros http desde el frontend, ya que el resto al tener ese error de CORS no funcionaría.  
-Recuerde que finalmente no pudimos exponer, por eso lo explico aquí. 
+Recuerde que no pudimos exponer, por eso lo explico aquí. 
+
+APP-FRONTEND https://github.com/hanabbi/APP-FRONTEND.git
+APP-FLASK https://github.com/hanabbi/APP-FLASK.git
+
 
 ## Descripción
 
